@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Advanced Banking Application</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: url('https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: 0;
+  }
+  
+  #app {
+    background: #fff;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  header {
+    background: linear-gradient(135deg, #2874f0 0%, #1a52c8 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .logo-icon {
+    font-size: 1.5rem;
+  }
+  
+  #logout-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  #logout-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .page-container {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  h1, h2, h3 {
+    color: #1c3d72;
+    margin-bottom: 16px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  /* Login Form */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  label {
+    font-weight: 500;
+    color: #1c3d72;
+    font-size: 0.95rem;
+  }
+  
+  input[type="text"],
+  input[type="password"],
+  input[type="number"] {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background-color: #f9fafb;
+  }
+  
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #2874f0;
+    box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.1);
+    background-color: white;
+  }
+  
+  button {
+    background: #2874f0;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  
+  button:hover {
+    background: #1a52c8;
+    transform: translateY(-1px);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  /* Account Details */
+  .balance-container {
+    background: linear-gradient(135deg, #2874f0 0%, #1a52c8 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .balance-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+  }
+  
+  .balance-amount {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  
+  /* Transfer form */
+  #transfer-form {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+  
+  /* Transaction history */
+  #transaction-history {
+    flex-grow: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+  }
+  
+  .transaction {
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .transaction:last-child {
+    border-bottom: none;
+  }
+  
+  .transaction-icon {
+    font-size: 1.2rem;
+    margin-right: 12px;
+  }
+  
+  .transaction-details {
+    flex-grow: 1;
+  }
+  
+  .transaction-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .transaction-date {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+  
+  .transaction-amount {
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  
+  .income .transaction-amount {
+    color: #10b981;
+  }
+  
+  .expense .transaction-amount {
+    color: #ef4444;
+  }
+  
+  /* Messages */
+  .error {
+    color: #ef4444;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 10px;
+    background: #fee2e2;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  
+  .success {
+    color: #10b981;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 10px;
+    background: #d1fae5;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  
+  /* Ads */
+  #ad-banner {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .ad-box {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .ad-icon {
+    font-size: 1.2rem;
+  }
+  
+  #bottom-ad {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 12px 20px;
+    text-align: center;
+    font-weight: 500;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 30px 0;
+    color: #6b7280;
+  }
+  
+  /* Navigation Tabs */
+  .nav-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+  }
+  
+  .nav-tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6b7280;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .nav-tab.active {
+    color: #2874f0;
+    border-bottom-color: #2874f0;
+  }
+  
+  /* Account Info Section */
+  .account-info {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .account-info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .account-info-label {
+    color: #64748b;
+  }
+  
+  .account-info-value {
+    font-weight: 500;
+  }
+
+  /* Footer Styles */
+  footer {
+    background: #f8fafc;
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .footer-link {
+    color: #1c3d72;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover {
+    color: #2874f0;
+    text-decoration: underline;
+  }
+
+  .footer-copyright {
+    margin-top: 10px;
+    font-size: 0.8rem;
+  }
+
+  .footer-social {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .social-icon {
+    color: #64748b;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+  }
+
+  .social-icon:hover {
+    color: #2874f0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #app {
+      margin: 10px;
+      border-radius: 8px;
+    }
+    
+    .page-container {
+      padding: 16px;
+    }
+    
+    h1 {
+      font-size: 1.6rem;
+    }
+    
+    .balance-amount {
+      font-size: 1.8rem;
+    }
+    
+    #transfer-form, #transaction-history {
+      padding: 16px;
+    }
+
+    footer {
+      padding: 15px;
+    }
+
+    .footer-links {
+      gap: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    #app {
+      margin: 0;
+      border-radius: 0;
+      min-height: 100vh;
+    }
+    
+    header {
+      padding: 14px 16px;
+    }
+    
+    header h2 {
+      font-size: 1.1rem;
+    }
+    
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    
+    .balance-container {
+      padding: 16px;
+    }
+    
+    .balance-amount {
+      font-size: 1.6rem;
+    }
+    
+    #ad-banner {
+      margin: 16px 0;
+    }
+    
+    .ad-box {
+      padding: 10px 12px;
+      font-size: 0.85rem;
+    }
+    
+    #bottom-ad {
+      padding: 10px 16px;
+      font-size: 0.9rem;
+    }
+    
+    .nav-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .nav-tab {
+      white-space: nowrap;
+    }
+
+    footer {
+      padding: 12px;
+      font-size: 0.8rem;
+    }
+
+    .footer-links {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-copyright {
+      font-size: 0.75rem;
+    }
+  }
+  
+  @media (max-height: 700px) {
+    #app {
+      margin: 0;
+      border-radius: 0;
+      min-height: 100vh;
+    }
+    
+    .page-container {
+      padding-bottom: 60px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="app" role="main" aria-label="Banking application">
+    <header id="navbar" style="display: none;">
+      <h2><span class="logo-icon">🏦</span> Neo Bank</h2>
+      <button id="logout-btn">Logout</button>
+    </header>
+
+    <div class="page-container">
+      <section id="login-page" aria-label="Login form">
+        <h1>Welcome to Neo Bank</h1>
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" autocomplete="username" required aria-required="true" placeholder="Enter your username" />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password" required aria-required="true" placeholder="Enter your password" />
+          </div>
+          <div id="login-error" class="error" role="alert" aria-live="assertive" style="display:none;"></div>
+          <button type="submit" aria-label="Log in to your account">Login</button>
+        </form>
+      </section>
+
+      <section id="account-page" aria-label="Account details" style="display: none;">
+        <div class="nav-tabs">
+          <div class="nav-tab active" data-tab="dashboard">Dashboard</div>
+          <div class="nav-tab" data-tab="transactions">Transactions</div>
+          <div class="nav-tab" data-tab="account">Account</div>
+        </div>
+
+        <div id="dashboard-tab" class="tab-content">
+          <div class="balance-container">
+            <div class="balance-label">Current Balance</div>
+            <div class="balance-amount">₹<span id="balance-amount">0.00</span></div>
+          </div>
+
+          <div class="balance-container">
+  <div class="balance-label">Current Balance</div>
+  <div class="balance-amount">₹<span id="balance-amount">0.00</span></div>
+</div>
+
+<!-- FD and RD Summary -->
+<div class="deposits-container">
+  <div class="fd-container">
+    <div class="balance-label">Fixed Deposit (FD)</div>
+    <div class="balance-amount">₹<span id="fd-amount">50000.00</span></div>
+  </div>
+  <div class="rd-container">
+    <div class="balance-label">Recurring Deposit (RD)</div>
+    <div class="balance-amount">₹<span id="rd-amount">12000.00</span></div>
+  </div>
+</div>
+
+<!-- Transfer Form -->
+<form id="transfer-form" aria-label="Transfer funds form" novalidate>
+  <h3>Transfer Funds</h3>
+
+  <div class="form-group">
+    <label for="recipient-account">Recipient Account #</label>
+    <input type="text" id="recipient-account" pattern="\\d{4,10}" placeholder="Enter account number" required aria-required="true" />
+  </div>
+
+  <div class="form-group">
+    <label for="transfer-amount">Amount (₹)</label>
+    <input type="number" step="0.01" min="0.01" id="transfer-amount" placeholder="Enter amount" required aria-required="true" />
+  </div>
+
+  <div class="form-group">
+    <label for="transfer-description">Description (Optional)</label>
+    <input type="text" id="transfer-description" placeholder="Enter description" />
+  </div>
+
+  <div id="transfer-error" class="error" role="alert" aria-live="assertive" style="display:none;"></div>
+  <div id="transfer-success" class="success" role="alert" aria-live="polite" style="display:none;"></div>
+
+  <button type="submit" aria-label="Send transfer">Transfer Money</button>
+</form>
+
+          
+          <div id="ad-banner" role="complementary" aria-label="Advertisement">
+            <div class="ad-box"><span class="ad-icon">🔔</span> Secure your future with our savings plans. Learn More!</div>
+            <div class="ad-box"><span class="ad-icon">💳</span> Get up to 5% cashback on your bank card today.</div>
+          </div>
+        </div>
+
+        <div id="transactions-tab" class="tab-content" style="display: none;">
+          <section id="transaction-history" aria-label="Transaction history">
+            <h3>Transaction History</h3>
+            <div id="transaction-filters">
+              <select id="transaction-type-filter" class="filter-select">
+                <option value="all">All Transactions</option>
+                <option value="sent">Sent</option>
+                <option value="received">Received</option>
+              </select>
+              <select id="transaction-date-filter" class="filter-select">
+                <option value="all">All Time</option>
+                <option value="week">Last 7 Days</option>
+                <option value="month">Last 30 Days</option>
+              </select>
+            </div>
+            <div id="transaction-list" tabindex="0" aria-live="polite" aria-relevant="additions">
+              <div class="empty-state">No transactions yet</div>
+            </div>
+          </section>
+        </div>
+
+        <div id="account-tab" class="tab-content" style="display: none;">
+          <div class="account-info">
+            <h3>Account Information</h3>
+            <div class="account-info-item">
+              <span class="account-info-label">Account Holder:</span>
+              <span class="account-info-value" id="account-holder">John Doe</span>
+            </div>
+            <div class="account-info-item">
+              <span class="account-info-label">Account Number:</span>
+              <span class="account-info-value" id="account-number">12345678</span>
+            </div>
+            <div class="account-info-item">
+              <span class="account-info-label">Account Type:</span>
+              <span class="account-info-value" id="account-type">Premium Savings</span>
+            </div>
+            <div class="account-info-item">
+              <span class="account-info-label">Member Since:</span>
+              <span class="account-info-value" id="member-since">Jan 2020</span>
+            </div>
+          </div>
+          
+          <div class="account-info">
+            <h3>Account Settings</h3>
+            <button id="change-password-btn" class="secondary-btn">Change Password</button>
+            <button id="view-statements-btn" class="secondary-btn">View Statements</button>
+            <button id="contact-support-btn" class="secondary-btn">Contact Support</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- New Footer Section -->
+    <footer aria-label="Footer">
+      <div class="footer-links">
+        <a href="#" class="footer-link">About Us</a>
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms of Service</a>
+        <a href="#" class="footer-link">Security</a>
+        <a href="#" class="footer-link">Contact</a>
+      </div>
+      <div class="footer-social">
+        <a href="#" aria-label="Facebook" class="social-icon">📘</a>
+        <a href="#" aria-label="Twitter" class="social-icon">🐦</a>
+        <a href="#" aria-label="Instagram" class="social-icon">📷</a>
+        <a href="#" aria-label="LinkedIn" class="social-icon">💼</a>
+      </div>
+      <div class="footer-copyright">
+        &copy; 2025 Neo Bank. All rights reserved.
+      </div>
+    </footer>
+
+    <div id="bottom-ad" role="complementary" aria-label="Sticky Advertisement">
+      🚀 Upgrade your plan for premium banking features!
+    </div>
+  </div>
+
+<script>
+  (function(){
+    'use strict';
+
+    // Enhanced Business Logic
+    class BankAccount {
+      constructor(accountNumber, balance, owner, accountType = 'Standard Savings', openedDate = new Date()) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.owner = owner;
+        this.accountType = accountType;
+        this.openedDate = openedDate;
+        this.transactions = [];
+      }
+      
+      deposit(amount, description = 'Deposit') {
+        if (amount <= 0) return false;
+        this.balance += amount;
+        this.recordTransaction('deposit', amount, description);
+        return true;
+      }
+      
+      withdraw(amount, description = 'Withdrawal') {
+        if (amount <= 0 || amount > this.balance) return false;
+        this.balance -= amount;
+        this.recordTransaction('withdrawal', amount, description);
+        return true;
+      }
+      
+      transfer(recipient, amount, description = 'Transfer') {
+        if (amount <= 0 || amount > this.balance) return false;
+        this.balance -= amount;
+        recipient.balance += amount;
+        
+        // Record transactions for both accounts
+        this.recordTransaction('transfer-out', amount, description, recipient.accountNumber);
+        recipient.recordTransaction('transfer-in', amount, description, this.accountNumber);
+        
+        return true;
+      }
+      
+      recordTransaction(type, amount, description, relatedAccount = null) {
+        this.transactions.push({
+          id: Date.now().toString() + Math.floor(Math.random() * 1000),
+          type,
+          amount,
+          description,
+          date: new Date(),
+          relatedAccount,
+          balanceAfter: this.balance
+        });
+      }
+      
+      getFormattedBalance() {
+        return this.balance.toFixed(2);
+      }
+      
+      getTransactionHistory(filter = {}) {
+        let transactions = [...this.transactions];
+        
+        // Apply filters
+        if (filter.type && filter.type !== 'all') {
+          transactions = transactions.filter(t => 
+            (filter.type === 'in' && (t.type === 'deposit' || t.type === 'transfer-in')) ||
+            (filter.type === 'out' && (t.type === 'withdrawal' || t.type === 'transfer-out'))
+          );
+        }
+        
+        if (filter.dateRange) {
+          const now = new Date();
+          let startDate;
+          
+          switch(filter.dateRange) {
+            case 'week':
+              startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              break;
+            case 'month':
+              startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+              break;
+            default:
+              return transactions;
+          }
+          
+          transactions = transactions.filter(t => t.date >= startDate);
+        }
+        
+        return transactions.sort((a, b) => b.date - a.date);
+      }
+    }
+
+    // Initialize the banking system
+    class BankingSystem {
+      constructor() {
+        this.accounts = {};
+        this.currentUser = null;
+        this.initializeSampleData();
+      }
+      
+      initializeSampleData() {
+        // Create sample accounts
+        const account1 = new BankAccount('12345678', 8000.50, 'Abhishek', 'Premium Savings', new Date(2025, 0, 15));
+        const account2 = new BankAccount('123456789', 500.00, 'Sahana', 'Standard Checking', new Date(2025, 5, 1));
+        const account3 = new BankAccount('123654987', 2000.00, 'Smith', 'Premium Checking', new Date(2025, 2, 10));
+        
+        // Add sample transactions
+        account1.deposit(200, 'Initial deposit');
+        account1.transfer(account2, 50.50, 'Dinner payment');
+        account3.transfer(account1, 200, 'Loan repayment');
+        account1.withdraw(100, 'ATM withdrawal');
+        
+        this.accounts = {
+          'user123': { 
+            username: 'user123', 
+            password: 'pass123',
+            account: account1
+          },
+          'alice': {
+            username: 'alice',
+            password: 'alice123',
+            account: account2
+          },
+          'bob': {
+            username: 'bob',
+            password: 'bob123',
+            account: account3
+          }
+        };
+      }
+      
+      login(username, password) {
+        const user = this.accounts[username];
+        if (user && user.password === password) {
+          this.currentUser = user;
+          return true;
+        }
+        return false;
+      }
+      
+      logout() {
+        this.currentUser = null;
+      }
+      
+      getCurrentAccount() {
+        return this.currentUser?.account || null;
+      }
+      
+      getAccountByNumber(accountNumber) {
+        for (const username in this.accounts) {
+          if (this.accounts[username].account.accountNumber === accountNumber) {
+            return this.accounts[username].account;
+          }
+        }
+        return null;
+      }
+    }
+
+    // Create banking system instance
+    const bankingSystem = new BankingSystem();
+
+    // DOM Elements
+    const navbar = document.getElementById('navbar');
+    const loginPage = document.getElementById('login-page');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const accountPage = document.getElementById('account-page');
+    const balanceAmountSpan = document.getElementById('balance-amount');
+    const transferForm = document.getElementById('transfer-form');
+    const recipientAccountInput = document.getElementById('recipient-account');
+    const transferAmountInput = document.getElementById('transfer-amount');
+    const transferDescriptionInput = document.getElementById('transfer-description');
+    const transferError = document.getElementById('transfer-error');
+    const transferSuccess = document.getElementById('transfer-success');
+    const transactionList = document.getElementById('transaction-list');
+    const logoutBtn = document.getElementById('logout-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabs = document.querySelectorAll('.nav-tab');
+    const transactionTypeFilter = document.getElementById('transaction-type-filter');
+    const transactionDateFilter = document.getElementById('transaction-date-filter');
+    const accountHolderSpan = document.getElementById('account-holder');
+    const accountNumberSpan = document.getElementById('account-number');
+    const accountTypeSpan = document.getElementById('account-type');
+    const memberSinceSpan = document.getElementById('member-since');
+
+    // Tab switching functionality
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        tabContents.forEach(content => {
+          content.style.display = 'none';
+        });
+        
+        document.getElementById(`${tab.dataset.tab}-tab`).style.display = 'block';
+        
+        if (tab.dataset.tab === 'transactions') {
+          renderTransactions();
+        }
+      });
+    });
+
+    // Transaction filter functionality
+    [transactionTypeFilter, transactionDateFilter].forEach(filter => {
+      filter.addEventListener('change', renderTransactions);
+    });
+
+    // Initial setup: Show login page
+    function showLogin() {
+      navbar.style.display = 'none';
+      loginPage.style.display = 'block';
+      accountPage.style.display = 'none';
+      loginForm.reset();
+      loginError.style.display = 'none';
+      loginError.textContent = '';
+      transferSuccess.style.display = 'none';
+      transferError.style.display = 'none';
+    }
+
+    // Show account page with updated data
+    function showAccount() {
+      navbar.style.display = 'flex';
+      loginPage.style.display = 'none';
+      accountPage.style.display = 'block';
+      
+      const account = bankingSystem.getCurrentAccount();
+      if (account) {
+        updateBalance();
+        renderTransactions();
+        updateAccountInfo();
+      }
+    }
+
+    // Update balance display
+    function updateBalance() {
+      const account = bankingSystem.getCurrentAccount();
+      if (account) {
+        balanceAmountSpan.textContent = account.getFormattedBalance();
+      }
+    }
+
+    // Update account information
+    function updateAccountInfo() {
+      const account = bankingSystem.getCurrentAccount();
+      if (account) {
+        accountHolderSpan.textContent = account.owner;
+        accountNumberSpan.textContent = account.accountNumber;
+        accountTypeSpan.textContent = account.accountType;
+        memberSinceSpan.textContent = account.openedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      }
+    }
+
+    // Render transactions in the history list
+    function renderTransactions() {
+      const account = bankingSystem.getCurrentAccount();
+      if (!account) return;
+
+      const typeFilter = transactionTypeFilter.value;
+      const dateFilter = transactionDateFilter.value;
+      
+      const transactions = account.getTransactionHistory({
+        type: typeFilter,
+        dateRange: dateFilter
+      });
+
+      if (transactions.length === 0) {
+        transactionList.innerHTML = '<div class="empty-state">No transactions found</div>';
+        return;
+      }
+      
+      let html = '';
+      transactions.forEach(tx => {
+        const isIncome = tx.type === 'deposit' || tx.type === 'transfer-in';
+        const dateStr = tx.date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        let title = '';
+        let relatedAccount = '';
+        
+        switch(tx.type) {
+          case 'deposit':
+            title = 'Deposit';
+            break;
+          case 'withdrawal':
+            title = 'Withdrawal';
+            break;
+          case 'transfer-in':
+            title = 'Received from';
+            relatedAccount = `Account ${tx.relatedAccount}`;
+            break;
+          case 'transfer-out':
+            title = 'Sent to';
+            relatedAccount = `Account ${tx.relatedAccount}`;
+            break;
+        }
+        
+        html += `
+          <div class="transaction ${isIncome ? 'income' : 'expense'}">
+            <span class="transaction-icon">${isIncome ? '📥' : '📤'}</span>
+            <div class="transaction-details">
+              <div class="transaction-title">
+                ${title} ${relatedAccount}
+              </div>
+              <div class="transaction-description">${tx.description}</div>
+              <div class="transaction-date">${dateStr} • Balance: ₹${tx.balanceAfter.toFixed(2)}</div>
+            </div>
+            <div class="transaction-amount">
+              ${isIncome ? '+' : '-'}₹${tx.amount.toFixed(2)}
+            </div>
+          </div>
+        `;
+      });
+      
+      transactionList.innerHTML = html;
+    }
+
+    // Validate login credentials
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = loginForm.username.value.trim();
+      const password = loginForm.password.value;
+      
+      if (bankingSystem.login(username, password)) {
+        showAccount();
+      } else {
+        loginError.style.display = 'block';
+        loginError.textContent = 'Invalid username or password. Please try again.';
+      }
+    });
+
+    // Validate transfer inputs
+    function validateTransfer(recipient, amount) {
+      transferError.style.display = 'none';
+      transferError.textContent = '';
+      
+      if (!recipient) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Please enter a recipient account number.';
+        return false;
+      }
+      
+      if (!/^\d{4,10}$/.test(recipient)) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Account number must be 4-10 digits.';
+        return false;
+      }
+      
+      const currentAccount = bankingSystem.getCurrentAccount();
+      const recipientAccount = bankingSystem.getAccountByNumber(recipient);
+      
+      if (!recipientAccount) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Recipient account not found.';
+        return false;
+      }
+      
+      if (recipient === currentAccount.accountNumber) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Cannot transfer to your own account.';
+        return false;
+      }
+      
+      if (isNaN(amount) || amount <= 0) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Please enter a valid amount greater than zero.';
+        return false;
+      }
+      
+      if (amount > currentAccount.balance) {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Insufficient funds for this transfer.';
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Handle transfer form submission
+    transferForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const recipient = recipientAccountInput.value.trim();
+      const amount = parseFloat(transferAmountInput.value);
+      const description = transferDescriptionInput.value.trim() || 'Transfer';
+      
+      if (!validateTransfer(recipient, amount)) {
+        return;
+      }
+      
+      const currentAccount = bankingSystem.getCurrentAccount();
+      const recipientAccount = bankingSystem.getAccountByNumber(recipient);
+      
+      if (currentAccount.transfer(recipientAccount, amount, description)) {
+        // Update UI
+        updateBalance();
+        renderTransactions();
+        
+        // Show success message
+        transferSuccess.style.display = 'block';
+        transferSuccess.textContent = `Successfully transferred $${amount.toFixed(2)} to account ${recipient}.`;
+        
+        // Reset form (but keep success message visible)
+        transferForm.reset();
+        
+        // Scroll to show the success message
+        transferSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        transferError.style.display = 'block';
+        transferError.textContent = 'Transfer failed. Please try again.';
+      }
+    });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', () => {
+      bankingSystem.logout();
+      showLogin();
+    });
+
+    // Initialize the app
+    showLogin();
+  })();
+</script>
+</body>
+</html>
